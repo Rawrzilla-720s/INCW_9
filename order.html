@@ -20,15 +20,14 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--ground); color: var(--ink); }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 0 var(--gutter); }
 
-    .band { background: var(--field); color: var(--on-field); padding: clamp(40px, 7vw, 88px) 0 clamp(32px, 5vw, 56px); }
-    h1 { margin: 0; font-size: clamp(2.75rem, 9vw, 6.5rem); line-height: .95; letter-spacing: -.035em; }
+    .band { background: var(--field); color: var(--on-field); padding: clamp(40px, 7vw, 80px) 0 clamp(32px, 5vw, 48px); }
+    h1 { margin: 0; font-size: clamp(2.75rem, 9vw, 5.5rem); line-height: .95; letter-spacing: -.035em; }
     .lede { margin: 20px 0 0; max-width: 34em; font-size: 1.1875rem; }
 
-    .order { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: clamp(32px, 6vw, 96px); align-items: start; padding-top: clamp(40px, 6vw, 72px); padding-bottom: 120px; }
-
-    form { display: grid; gap: 28px; }
+    main { padding-top: clamp(32px, 5vw, 56px); padding-bottom: 120px; }
+    form { display: grid; gap: 28px; padding: clamp(24px, 4vw, 40px); background: var(--surface); }
     .field { display: grid; gap: 8px; }
     label, legend { font-weight: 650; }
     .hint { color: var(--muted); font-size: .9375rem; font-weight: 400; }
@@ -39,8 +38,8 @@
 
     fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
     legend { padding: 0; margin-bottom: 8px; }
-    .toppings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-    .toppings label { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--surface); border: 2px solid transparent; font-weight: 500; cursor: pointer; transition: background-color .15s, border-color .15s; }
+    .toppings { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+    .toppings label { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--ground); border: 2px solid transparent; font-weight: 500; cursor: pointer; transition: background-color .15s, border-color .15s; }
     .toppings label:hover { border-color: var(--control); }
     .toppings label:has(input:checked) { background: var(--accent-tint); border-color: var(--accent); }
     .toppings input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
@@ -50,26 +49,12 @@
     button:active { transform: translateY(1px); }
     .fine { margin: 0; color: var(--muted); font-size: .9375rem; }
 
-    /* Live preview: CSS reads the form state with :has(), so no script is needed */
-    .preview { position: sticky; top: 24px; margin: 0; padding: 28px; background: var(--surface); }
-    .preview svg { display: block; width: 100%; height: auto; transform: scale(.86); transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
-    .preview figcaption { margin-top: 12px; color: var(--muted); font-size: .9375rem; }
-    .order:has(option[value="small"]:checked) .preview svg { transform: scale(.7); }
-    .order:has(option[value="large"]:checked) .preview svg { transform: scale(1); }
-    .topping { opacity: 0; transform: scale(.6); transform-box: fill-box; transform-origin: center; transition: opacity .25s, transform .3s cubic-bezier(.2, .8, .2, 1); }
-    .order:has(#topping-mushroom:checked) .mushroom,
-    .order:has(#topping-olive:checked) .olive,
-    .order:has(#topping-pineapple:checked) .pineapple { opacity: 1; transform: scale(1); }
-
-    @media (max-width: 760px) {
-      .order { grid-template-columns: 1fr; padding-bottom: 72px; }
-      .preview { position: static; order: -1; padding: 16px; }
-      .preview svg { max-width: 260px; margin: 0 auto; }
-      .toppings { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      main { padding-bottom: 72px; }
       button { justify-self: stretch; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .preview svg, .topping, button, .toppings label { transition: none; }
+      button, .toppings label { transition: none; }
     }
   </style>
 </head>
@@ -77,11 +62,11 @@
   <header class="band">
     <div class="wrap">
       <h1>Campus Crust</h1>
-      <p class="lede">Pick a size, pile on toppings and print a practice ticket. Use a made-up name; nothing is cooked, charged or saved.</p>
+      <p class="lede">Pick a size, choose your toppings and get a practice ticket. Use a made-up name; nothing is cooked, charged or saved.</p>
     </div>
   </header>
 
-  <main class="wrap order">
+  <main class="wrap">
     <form action="order.php" method="post">
       <div class="field">
         <label for="chef">Name for the ticket</label>
@@ -106,9 +91,11 @@
       <fieldset>
         <legend>Toppings <span class="hint">(optional)</span></legend>
         <div class="toppings">
-          <label for="topping-mushroom"><input id="topping-mushroom" name="toppings[]" type="checkbox" value="mushroom"> Roasted mushroom</label>
-          <label for="topping-olive"><input id="topping-olive" name="toppings[]" type="checkbox" value="olive"> Black olive</label>
+          <label for="topping-mushroom"><input id="topping-mushroom" name="toppings[]" type="checkbox" value="mushroom"> Mushrooms</label>
+          <label for="topping-olive"><input id="topping-olive" name="toppings[]" type="checkbox" value="olive"> Olives</label>
           <label for="topping-pineapple"><input id="topping-pineapple" name="toppings[]" type="checkbox" value="pineapple"> Pineapple</label>
+          <label for="topping-onion"><input id="topping-onion" name="toppings[]" type="checkbox" value="onion"> Onions</label>
+          <label for="topping-green-pepper"><input id="topping-green-pepper" name="toppings[]" type="checkbox" value="green-pepper"> Green bell pepper</label>
         </div>
       </fieldset>
 
@@ -117,38 +104,9 @@
         <textarea id="kitchen-notes" name="notes" rows="3" maxlength="200"></textarea>
       </div>
 
-      <button type="submit">Print my ticket</button>
+      <button type="submit">Make my practice ticket</button>
       <p class="fine">Classroom exercise only. No order is placed or sent to a kitchen.</p>
     </form>
-
-    <figure class="preview">
-      <svg viewBox="0 0 200 200" aria-hidden="true">
-        <circle cx="100" cy="100" r="96" fill="#d99a4e"/>
-        <circle cx="100" cy="100" r="82" fill="#c8331d"/>
-        <path d="M100 24c18 2 30 10 42 8 14 10 22 24 30 40-2 16 4 30-2 44-10 14-14 28-30 36-16 2-26 12-42 14-16-4-28-10-42-12-12-10-24-20-28-36 0-14-8-28-4-42 8-14 12-28 28-36 14 0 30-12 48-16z" fill="#f4cd6c"/>
-        <g class="topping mushroom" fill="#e8dccb" stroke="#8a6f52" stroke-width="2">
-          <path d="M58 70a12 12 0 0 1 24 0zM66 70h8v10h-8z"/>
-          <path d="M118 52a12 12 0 0 1 24 0zM126 52h8v10h-8z"/>
-          <path d="M126 126a12 12 0 0 1 24 0zM134 126h8v10h-8z"/>
-          <path d="M66 134a12 12 0 0 1 24 0zM74 134h8v10h-8z"/>
-        </g>
-        <g class="topping olive" fill="none" stroke="#1c1c1c" stroke-width="5">
-          <circle cx="98" cy="62" r="6"/>
-          <circle cx="146" cy="96" r="6"/>
-          <circle cx="104" cy="148" r="6"/>
-          <circle cx="54" cy="106" r="6"/>
-          <circle cx="100" cy="104" r="6"/>
-        </g>
-        <g class="topping pineapple" fill="#fff4b8" stroke="#9c6f0a" stroke-width="2.5">
-          <rect x="78" y="88" width="13" height="13" transform="rotate(18 84 94)"/>
-          <rect x="120" y="76" width="13" height="13" transform="rotate(-12 126 82)"/>
-          <rect x="112" y="112" width="13" height="13" transform="rotate(30 118 118)"/>
-          <rect x="72" y="114" width="13" height="13" transform="rotate(-24 78 120)"/>
-          <rect x="88" y="40" width="13" height="13" transform="rotate(8 94 46)"/>
-        </g>
-      </svg>
-      <figcaption>Your pizza, drawn to size. Toppings appear as you tick them.</figcaption>
-    </figure>
   </main>
 </body>
 </html>

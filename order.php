@@ -7,7 +7,13 @@ function e(string $value): string {
 
 // Form values stay short and fixed; these are only what the ticket shows.
 $sizeLabels = ['small' => 'Small, 10 inch', 'medium' => 'Medium, 12 inch', 'large' => 'Large, 14 inch'];
-$toppingLabels = ['mushroom' => 'Roasted mushroom', 'olive' => 'Black olive', 'pineapple' => 'Pineapple'];
+$toppingLabels = [
+    'mushroom' => 'Mushrooms',
+    'olive' => 'Olives',
+    'pineapple' => 'Pineapple',
+    'onion' => 'Onions',
+    'green-pepper' => 'Green bell pepper'
+];
 
 $errors = [];
 $clean = [];
@@ -45,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     }
 
     // Unchecked boxes are never sent, so no toppings key just means plain cheese.
-    $allowedToppings = ['mushroom', 'olive', 'pineapple'];
+    $allowedToppings = array_keys($toppingLabels);
     $toppings = $_POST['toppings'] ?? [];
     $toppingsOk = is_array($toppings);
     if ($toppingsOk) {
@@ -57,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         }
     }
     if (!$toppingsOk) {
-        $errors[] = 'Choose toppings only from mushroom, olive, or pineapple.';
+        $errors[] = 'Choose toppings only from the list on the form.';
     } else {
         $clean['toppings'] = [];
         foreach (array_unique($toppings) as $topping) {
@@ -107,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     }
     * { box-sizing: border-box; }
     body { margin: 0; font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--ground); color: var(--ink); }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 0 var(--gutter); }
 
     .band { background: var(--field); color: var(--on-field); padding: clamp(40px, 7vw, 88px) 0 clamp(32px, 5vw, 56px); }
     h1 { margin: 0; font-size: clamp(2.5rem, 7vw, 5rem); line-height: .98; letter-spacing: -.035em; overflow-wrap: anywhere; }
@@ -116,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     main { padding-top: clamp(40px, 6vw, 72px); padding-bottom: 120px; }
     h2 { margin: 0 0 16px; font-size: 1.25rem; }
 
-    .ticket { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 72px); padding: clamp(24px, 4vw, 48px); background: var(--surface); }
+    .ticket { display: grid; gap: 28px; padding: clamp(24px, 4vw, 40px); background: var(--surface); }
     .count { margin: 0; font-size: clamp(2rem, 4.5vw, 3.25rem); font-weight: 700; line-height: 1.05; letter-spacing: -.02em; }
     .lines { margin: 0; display: grid; gap: 14px; }
     .lines div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 12px; }
@@ -134,8 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     .back:active { transform: translateY(1px); }
     .back:focus-visible { outline: 3px solid var(--field); outline-offset: 2px; }
 
-    @media (max-width: 760px) {
-      .ticket { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
       .lines div { grid-template-columns: 1fr; gap: 0; }
       .back { display: block; text-align: center; }
       main { padding-bottom: 72px; }
