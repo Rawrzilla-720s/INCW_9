@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
+// Escape text before printing it into the page so user input can't inject HTML.
 function e(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-// Form values stay short and fixed; these are only what the ticket shows.
+// The form posts the short keys; the ticket shows the friendly names.
 $sizeLabels = ['small' => 'Small, 10 inch', 'medium' => 'Medium, 12 inch', 'large' => 'Large, 14 inch'];
 $toppingLabels = [
     'mushroom' => 'Mushrooms',
@@ -24,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Allow: POST');
     $errors[] = 'Open order.html and submit the form using POST.';
 } else {
+    // Name: required, 1-40 bytes after trimming spaces.
     $customer = $_POST['customer'] ?? null;
     if (!is_string($customer) || trim($customer) === ''
         || strlen(trim($customer)) > 40) {
@@ -32,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $clean['customer'] = trim($customer);
     }
 
+    // Size: must be one of the three options.
     $size = $_POST['size'] ?? null;
     if (!is_string($size) || !in_array($size, ['small', 'medium', 'large'], true)) {
         $errors[] = 'Choose small, medium, or large.';
@@ -39,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $clean['size'] = $sizeLabels[$size];
     }
 
-    // Only a single string can be a valid quantity; arrays and missing keys fail here.
+    // Quantity: whole number from 1 to 5. Blank, missing or array values fail.
     $quantity = $_POST['quantity'] ?? null;
     $quantity = is_string($quantity)
         ? filter_var($quantity, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 5]])
@@ -50,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $clean['quantity'] = $quantity;
     }
 
-    // Unchecked boxes are never sent, so no toppings key just means plain cheese.
+    // Toppings: optional. Unchecked boxes aren't sent, so a missing key means none.
+    // Every item must be a string from the allowed list, or the whole order is rejected.
     $allowedToppings = array_keys($toppingLabels);
     $toppings = $_POST['toppings'] ?? [];
     $toppingsOk = is_array($toppings);
@@ -71,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         }
     }
 
+    // Notes: optional, up to 200 bytes. Empty is fine.
     $notes = $_POST['notes'] ?? '';
     if (!is_string($notes) || strlen(trim($notes)) > 200) {
         $errors[] = 'Enter one kitchen note of 200 bytes or less.';
