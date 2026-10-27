@@ -30,7 +30,20 @@
       <option value="large">Large</option>
     </select>
 
-    <!-- TODO A: Add quantity, toppings[], and notes here. -->
+    <label for="pizza-quantity">Quantity (required, 1-5)</label>
+    <input id="pizza-quantity" name="quantity" type="number" min="1" max="5" step="1" value="1" required>
+
+    <!-- toppings[] makes PHP collect every checked box into one array -->
+    <fieldset>
+      <legend>Toppings (optional)</legend>
+      <label for="topping-mushroom"><input id="topping-mushroom" name="toppings[]" type="checkbox" value="mushroom"> Mushroom</label>
+      <label for="topping-olive"><input id="topping-olive" name="toppings[]" type="checkbox" value="olive"> Olive</label>
+      <label for="topping-pineapple"><input id="topping-pineapple" name="toppings[]" type="checkbox" value="pineapple"> Pineapple</label>
+    </fieldset>
+
+    <label for="kitchen-notes">Kitchen note (optional)</label>
+    <textarea id="kitchen-notes" name="notes" rows="3" maxlength="200"></textarea>
+    <small>Up to 200 characters.</small>
 
     <button type="submit">Make my practice ticket</button>
   </form>
