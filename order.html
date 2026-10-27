@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus Crust | Pizza practice</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font: 16px/1.6 system-ui, sans-serif; max-width: 650px; margin: 30px auto; padding: 20px; background: #faf5e9; color: #352b22; }
+    form { background: white; padding: 24px; border: 1px solid #ddcfb5; border-radius: 12px; }
+    label { display: block; margin: 14px 0 5px; }
+    input:not([type=checkbox]), select, textarea { width: 100%; padding: 10px; font: inherit; border: 1px solid #ac9f8b; border-radius: 6px; }
+    fieldset { border: 1px solid #ddcfb5; margin: 18px 0; }
+    button { margin-top: 20px; background: #a53d23; color: white; padding: 12px 20px; border: 0; border-radius: 6px; font: inherit; cursor: pointer; }
+    small { color: #65594a; }
+  </style>
+</head>
+<body>
+  <h1>Campus Crust</h1>
+  <p>Build a pizza. Practice PHP. Use a fictional name.</p>
+  <p><small>Classroom exercise only. Nothing is purchased, saved, or sent to a kitchen.</small></p>
+  <form action="order.php" method="post">
+    <label for="chef">Chef name (required)</label>
+    <input id="chef" name="customer" type="text" maxlength="40" required>
+
+    <label for="pizza-size">Pizza size (required)</label>
+    <select id="pizza-size" name="size" required>
+      <option value="small">Small</option>
+      <option value="medium" selected>Medium</option>
+      <option value="large">Large</option>
+    </select>
+
+    <!-- TODO A: Add quantity, toppings[], and notes here. -->
+
+    <button type="submit">Make my practice ticket</button>
+  </form>
+</body>
+</html>
