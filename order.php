@@ -7,7 +7,7 @@ function e(string $value): string {
 
 $errors = [];
 $clean = [];
-$practiceComplete = false; // TODO E: Set true only after completing B-D.
+$practiceComplete = true;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -29,11 +29,41 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $clean['size'] = ucfirst($size);
     }
 
-    // TODO B: Read and validate quantity; store an integer in $clean['quantity'].
+    // Only a single string can be a valid quantity; arrays and missing keys fail here.
+    $quantity = $_POST['quantity'] ?? null;
+    $quantity = is_string($quantity)
+        ? filter_var($quantity, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 5]])
+        : false;
+    if ($quantity === false) {
+        $errors[] = 'Choose a whole-number quantity from 1 to 5.';
+    } else {
+        $clean['quantity'] = $quantity;
+    }
 
-    // TODO C: Read and validate toppings; store a list in $clean['toppings'].
+    // Unchecked boxes are never sent, so no toppings key just means plain cheese.
+    $allowedToppings = ['mushroom', 'olive', 'pineapple'];
+    $toppings = $_POST['toppings'] ?? [];
+    $toppingsOk = is_array($toppings);
+    if ($toppingsOk) {
+        foreach ($toppings as $topping) {
+            if (!is_string($topping) || !in_array($topping, $allowedToppings, true)) {
+                $toppingsOk = false;
+                break;
+            }
+        }
+    }
+    if (!$toppingsOk) {
+        $errors[] = 'Choose toppings only from mushroom, olive, or pineapple.';
+    } else {
+        $clean['toppings'] = array_map('ucfirst', array_values(array_unique($toppings)));
+    }
 
-    // TODO D: Read and validate notes; store a string in $clean['notes'].
+    $notes = $_POST['notes'] ?? '';
+    if (!is_string($notes) || strlen(trim($notes)) > 200) {
+        $errors[] = 'Enter one kitchen note of 200 bytes or less.';
+    } else {
+        $clean['notes'] = trim($notes);
+    }
 
     if (!$practiceComplete) {
         $errors[] = 'Learning checkpoint: finish TODOs B-D, then enable TODO E.';
