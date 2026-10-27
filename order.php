@@ -5,6 +5,10 @@ function e(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+// Form values stay short and fixed; these are only what the ticket shows.
+$sizeLabels = ['small' => 'Small, 10 inch', 'medium' => 'Medium, 12 inch', 'large' => 'Large, 14 inch'];
+$toppingLabels = ['mushroom' => 'Roasted mushroom', 'olive' => 'Black olive', 'pineapple' => 'Pineapple'];
+
 $errors = [];
 $clean = [];
 $practiceComplete = true;
@@ -26,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     if (!is_string($size) || !in_array($size, ['small', 'medium', 'large'], true)) {
         $errors[] = 'Choose small, medium, or large.';
     } else {
-        $clean['size'] = ucfirst($size);
+        $clean['size'] = $sizeLabels[$size];
     }
 
     // Only a single string can be a valid quantity; arrays and missing keys fail here.
@@ -55,7 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     if (!$toppingsOk) {
         $errors[] = 'Choose toppings only from mushroom, olive, or pineapple.';
     } else {
-        $clean['toppings'] = array_map('ucfirst', array_values(array_unique($toppings)));
+        $clean['toppings'] = [];
+        foreach (array_unique($toppings) as $topping) {
+            $clean['toppings'][] = $toppingLabels[$topping];
+        }
     }
 
     $notes = $_POST['notes'] ?? '';
@@ -86,48 +93,119 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Campus Crust | Practice ticket</title>
   <style>
-    body { font: 16px/1.6 system-ui, sans-serif; max-width: 650px; margin: 30px auto; padding: 20px; background: #faf5e9; color: #352b22; }
-    main { background: white; padding: 24px; border: 1px solid #ddcfb5; border-radius: 12px; }
-    li { margin: 10px 0; overflow-wrap: anywhere; }
-    .errors { color: #932d22; }
-    a { color: #a53d23; }
+    :root {
+      --ground: #f3f3f1;
+      --surface: #ffffff;
+      --ink: #161616;
+      --muted: #555550;
+      --field: #0039a6;
+      --on-field: #ffffff;
+      --accent: #d33a1f;
+      --accent-press: #b02c14;
+      --accent-tint: #fbe7e2;
+      --gutter: clamp(16px, 4vw, 48px);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--ground); color: var(--ink); }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+
+    .band { background: var(--field); color: var(--on-field); padding: clamp(40px, 7vw, 88px) 0 clamp(32px, 5vw, 56px); }
+    h1 { margin: 0; font-size: clamp(2.5rem, 7vw, 5rem); line-height: .98; letter-spacing: -.035em; overflow-wrap: anywhere; }
+    .lede { margin: 20px 0 0; max-width: 34em; font-size: 1.1875rem; }
+
+    main { padding-top: clamp(40px, 6vw, 72px); padding-bottom: 120px; }
+    h2 { margin: 0 0 16px; font-size: 1.25rem; }
+
+    .ticket { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 72px); padding: clamp(24px, 4vw, 48px); background: var(--surface); }
+    .count { margin: 0; font-size: clamp(2rem, 4.5vw, 3.25rem); font-weight: 700; line-height: 1.05; letter-spacing: -.02em; }
+    .lines { margin: 0; display: grid; gap: 14px; }
+    .lines div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 12px; }
+    .lines dt { color: var(--muted); }
+    .lines dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+    .problems { padding: clamp(24px, 4vw, 48px); background: var(--accent-tint); }
+    .problems ul { margin: 0; padding-left: 1.2em; }
+    .problems li { margin: 8px 0; overflow-wrap: anywhere; }
+
+    .after { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-top: 32px; }
+    .after p { margin: 0; color: var(--muted); font-size: .9375rem; }
+    .back { display: inline-block; padding: 16px 28px; font-weight: 650; color: #ffffff; background: var(--accent); text-decoration: none; transition: background-color .15s, transform .1s; }
+    .back:hover { background: var(--accent-press); }
+    .back:active { transform: translateY(1px); }
+    .back:focus-visible { outline: 3px solid var(--field); outline-offset: 2px; }
+
+    @media (max-width: 760px) {
+      .ticket { grid-template-columns: 1fr; }
+      .lines div { grid-template-columns: 1fr; gap: 0; }
+      .back { display: block; text-align: center; }
+      main { padding-bottom: 72px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .back { transition: none; }
+    }
   </style>
 </head>
 <body>
-<main>
 <?php if ($errors !== []): ?>
-  <h1>Almost ready, Chef!</h1>
-  <ul class="errors" role="alert">
-    <?php foreach ($errors as $error): ?>
-      <li><?= e($error) ?></li>
-    <?php endforeach; ?>
-  </ul>
+  <header class="band">
+    <div class="wrap">
+      <h1>Almost ready, Chef!</h1>
+      <p class="lede">The kitchen could not read this ticket yet. Fix the items below and send it again.</p>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="problems" role="alert">
+      <h2>What needs fixing</h2>
+      <ul>
+        <?php foreach ($errors as $error): ?>
+          <li><?= e($error) ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <div class="after">
+      <p>Nothing was saved. Your answers are not kept between tries.</p>
+      <a class="back" href="order.html">Back to the pizza form</a>
+    </div>
+  </main>
 <?php else: ?>
-  <h1>Nice work, Chef <?= e($clean['customer']) ?>.</h1>
-  <h2>Your practice ticket</h2>
-  <ul>
-  <?php
-  $labels = [
-      'customer' => 'Chef name',
-      'size' => 'Pizza size',
-      'quantity' => 'Quantity',
-      'toppings' => 'Toppings',
-      'notes' => 'Kitchen note'
-  ];
-  foreach ($labels as $key => $label):
-      $value = $clean[$key];
-      if ($key === 'toppings') {
-          $value = $value === [] ? 'Plain cheese' : implode(', ', $value);
-      } elseif ($key === 'notes' && $value === '') {
-          $value = 'No special requests';
-      }
-  ?>
-    <li><strong><?= e($label) ?>:</strong> <?= e((string) $value) ?></li>
-  <?php endforeach; ?>
-  </ul>
-  <p>Practice complete. No order was saved, purchased, or sent to a kitchen.</p>
+  <header class="band">
+    <div class="wrap">
+      <h1>Order up, Chef <?= e($clean['customer']) ?>.</h1>
+      <p class="lede">Your practice ticket is ready. This is where a real kitchen would start the oven.</p>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="ticket" aria-labelledby="ticket-title">
+      <div>
+        <h2 id="ticket-title">Practice ticket</h2>
+        <p class="count"><?= e((string) $clean['quantity']) ?> &times; <?= e($clean['size']) ?></p>
+      </div>
+      <dl class="lines">
+      <?php
+      $labels = [
+          'customer' => 'Name',
+          'size' => 'Pizza size',
+          'quantity' => 'Quantity',
+          'toppings' => 'Toppings',
+          'notes' => 'Kitchen note'
+      ];
+      foreach ($labels as $key => $label):
+          $value = $clean[$key];
+          if ($key === 'toppings') {
+              $value = $value === [] ? 'Plain cheese' : implode(', ', $value);
+          } elseif ($key === 'notes' && $value === '') {
+              $value = 'No special requests';
+          }
+      ?>
+        <div><dt><?= e($label) ?></dt><dd><?= e((string) $value) ?></dd></div>
+      <?php endforeach; ?>
+      </dl>
+    </section>
+    <div class="after">
+      <p>Practice complete. No order was saved, purchased, or sent to a kitchen.</p>
+      <a class="back" href="order.html">Build another pizza</a>
+    </div>
+  </main>
 <?php endif; ?>
-  <p><a href="order.html">Back to the pizza form</a></p>
-</main>
 </body>
 </html>
