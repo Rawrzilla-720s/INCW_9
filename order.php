@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Campus Crust | Practice ticket</title>
+  <title>Campus Crust | Ticket</title>
   <style>
     :root {
       --ground: #f3f3f1;
@@ -134,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     .problems li { margin: 8px 0; overflow-wrap: anywhere; }
 
     .after { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-top: 32px; }
-    .after p { margin: 0; color: var(--muted); font-size: .9375rem; }
     .back { display: inline-block; padding: 16px 28px; font-weight: 650; color: #ffffff; background: var(--accent); text-decoration: none; transition: background-color .15s, transform .1s; }
     .back:hover { background: var(--accent-press); }
     .back:active { transform: translateY(1px); }
@@ -168,7 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
       </ul>
     </div>
     <div class="after">
-      <p>Nothing was saved. Your answers are not kept between tries.</p>
       <a class="back" href="order.html">Back to the pizza form</a>
     </div>
   </main>
@@ -176,13 +174,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   <header class="band">
     <div class="wrap">
       <h1>Order up, Chef <?= e($clean['customer']) ?>.</h1>
-      <p class="lede">Your practice ticket is ready. This is where a real kitchen would start the oven.</p>
+      <p class="lede">Your ticket is ready.</p>
     </div>
   </header>
   <main class="wrap">
     <section class="ticket" aria-labelledby="ticket-title">
       <div>
-        <h2 id="ticket-title">Practice ticket</h2>
+        <h2 id="ticket-title">Ticket</h2>
         <p class="count"><?= e((string) $clean['quantity']) ?> &times; <?= e($clean['size']) ?></p>
       </div>
       <dl class="lines">
@@ -207,7 +205,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
       </dl>
     </section>
     <div class="after">
-      <p>Practice complete. No order was saved, purchased, or sent to a kitchen.</p>
       <a class="back" href="order.html">Build another pizza</a>
     </div>
   </main>
